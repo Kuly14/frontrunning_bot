@@ -27,4 +27,6 @@ contract Bot {
         require(balance_before < balance_after, "Unprofitable frontrun");
         return (success, output);
     }
+    
+    receive() external payable{]
 }
