@@ -28,5 +28,5 @@ contract Bot {
         return (success, output);
     }
     
-    receive() external payable{]
+    receive() external payable{}
 }
