@@ -1,11 +1,12 @@
 use anyhow::Result;
+use dotenv;
 use ethers::{
     prelude::{k256::ecdsa::SigningKey, SignerMiddleware},
     providers::{Http, Middleware, Provider, Ws},
-    signers::{LocalWallet, Signer, Wallet}, types::H160,
+    signers::{LocalWallet, Signer, Wallet},
+    types::H160,
 };
-use std::{sync::Arc, str::FromStr};
-use dotenv;
+use std::{str::FromStr, sync::Arc};
 
 #[derive(Debug)]
 pub struct Config {
@@ -35,7 +36,8 @@ impl Config {
         let middleware = SignerMiddleware::new(http_provider, wallet);
 
         // TODO Add mainnet address here
-        let bot_address = H160::from_str(&String::from("0x4162a3316fb46e2c9e1cedf459c42f669dcabc3e"))?;
+        let bot_address =
+            H160::from_str(&String::from("0x4162a3316fb46e2c9e1cedf459c42f669dcabc3e"))?;
 
         Ok(Self {
             ws: ws_provider,

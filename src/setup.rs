@@ -1,9 +1,9 @@
+use ethers::prelude::*;
+use ethers_solc::Solc;
 use std::fs::File;
 use std::io::prelude::*;
-use ethers_solc::Solc;
-use ethers::prelude::*;
 
-use crate::{Bot, config};
+use crate::{config, Bot};
 
 // Unecessary we can just use abigen! from ethers
 pub fn setup() {
@@ -33,9 +33,8 @@ pub fn setup() {
     bindings.write_to_file("artifacts/bindings/Bot.rs").unwrap();
 }
 
-pub async fn deploy_mainnet_contract() -> (){
+pub async fn deploy_mainnet_contract() -> () {
     let config = config::Config::new().await.unwrap();
     let contract = Bot::deploy(config.http, ()).unwrap().send().await.unwrap();
     println!("{:#?}", contract.address());
 }
-

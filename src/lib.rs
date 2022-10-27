@@ -1,4 +1,5 @@
 use anyhow::Result;
+use dotenv;
 use ethers::{
     prelude::k256::ecdsa::SigningKey,
     prelude::*,
@@ -7,8 +8,6 @@ use ethers::{
 };
 use std::sync::Arc;
 use std::time::Duration;
-use dotenv;
-
 
 pub mod config;
 pub mod setup;
@@ -28,7 +27,7 @@ pub async fn watch_mempool(config: config::Config) -> Result<()> {
                         Err(e) => {
                             eprintln!("{}", e);
                             false
-                        },
+                        }
                     };
 
                     if success == true {
@@ -44,11 +43,9 @@ pub async fn watch_mempool(config: config::Config) -> Result<()> {
 pub async fn execute_trade(config: &config::Config, to: &H160, input: &Bytes, gas: &U256) {
     let bot = Bot::new(config.bot_address, config.http.clone());
     let _receipt = match bot.frontrun_bytes(*to, input.clone(), *gas).send().await {
-        Ok(receipt) => {
-            match receipt.await {
-                Ok(_) => println!("Trade on mainnet successful!!!"),
-                Err(e) => eprintln!("Failed mainnnet trande with this error: {}", e),
-            }
+        Ok(receipt) => match receipt.await {
+            Ok(_) => println!("Trade on mainnet successful!!!"),
+            Err(e) => eprintln!("Failed mainnnet trande with this error: {}", e),
         },
         Err(e) => eprintln!("Failed with this error: {}", e),
     };
@@ -64,24 +61,26 @@ pub async fn try_tx(config: &config::Config, to: &H160, input: &Bytes, gas: &U25
 
     let bot = deploy_contract_fork(&provider).await?;
 
-    match bot.frontrun_bytes(to.clone(), input.clone(), gas.clone()).send().await {
+    match bot
+        .frontrun_bytes(to.clone(), input.clone(), gas.clone())
+        .send()
+        .await
+    {
         Ok(_) => {
             println!("Transaction successful on mainnet-fork, moving onto real chain");
             return Ok(true);
-        },
+        }
         Err(e) => {
             eprintln!("Failed with: {}", e);
             return Ok(false);
-        },
+        }
     };
 }
 
 pub async fn deploy_contract_fork(
     provider: &SignerMiddleware<Provider<Http>, Wallet<SigningKey>>,
 ) -> Result<bot::Bot<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>> {
-    let bot_contract = Bot::deploy(Arc::new(provider.clone()), ())?
-        .send()
-        .await?;
+    let bot_contract = Bot::deploy(Arc::new(provider.clone()), ())?.send().await?;
     Ok(bot_contract)
 }
 
@@ -89,9 +88,9 @@ pub fn get_anvil_provider(
     anvil: &AnvilInstance,
 ) -> Result<Arc<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>> {
     dotenv::dotenv().unwrap();
-    let wallet: LocalWallet = std::env::var("PRIVATE_KEY")?
-        .parse::<LocalWallet>()?;
-    let provider = Provider::<Http>::try_from(anvil.endpoint())?.interval(Duration::from_millis(10u64));
+    let wallet: LocalWallet = std::env::var("PRIVATE_KEY")?.parse::<LocalWallet>()?;
+    let provider =
+        Provider::<Http>::try_from(anvil.endpoint())?.interval(Duration::from_millis(10u64));
 
     let client = SignerMiddleware::new(provider, wallet.with_chain_id(anvil.chain_id()));
 
