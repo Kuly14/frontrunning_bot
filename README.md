@@ -1,13 +1,10 @@
 # MEV Frontrunning Bot written in Rust
 
-This bot is very simple. It tracks mainnet transactions if they have some data so if it's some kind of contract call, the bot will launch a mainnet-fork, it will try to replicate the tx there and if it's profitable it will run the transaction on mainnet with higher gas than the intiail transaction.
+This bot is straightforward. It tracks mainnet transactions, if the underlying transaction is a contract call with Input>10 bytes, the bot will try to replicate the transaction on a mainnet fork. If the tx is profitable, it will then run it on mainnet.
 
-I didn't test it on mainnet since I'm too cheap to loose some ether on the contract deployment, but if you want give it a try.
-
-Before you do so definitelly implement flashbots so you won't get frontrun frontrunning xD. 
-
+I did not test it because I am too cheap to lose some ether on the contract deployment, but if you want, give it a try.
+Before you do so, implement flashbots so you will not get front-run frontrunning xD.
 
 # Disclaimer
-
-This is untested software only use it if you know what you are doing.
+This is untested software. Only use it if you know what you are doing.
 
