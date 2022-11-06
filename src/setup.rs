@@ -24,7 +24,7 @@ pub fn setup() {
     };
 
     let mut file_abi = File::create("artifacts/abi/bot.json").unwrap();
-    file_abi.write_all(&abi.as_bytes()).unwrap();
+    file_abi.write_all(abi.as_bytes()).unwrap();
 
     let mut file_bytecode = File::create("artifacts/abi/bytecode.txt").unwrap();
     file_bytecode.write_all(&bytecode).unwrap();
@@ -33,7 +33,7 @@ pub fn setup() {
     bindings.write_to_file("artifacts/bindings/Bot.rs").unwrap();
 }
 
-pub async fn deploy_mainnet_contract() -> () {
+pub async fn deploy_mainnet_contract() {
     let config = config::Config::new().await.unwrap();
     let contract = Bot::deploy(config.http, ()).unwrap().send().await.unwrap();
     println!("{:#?}", contract.address());

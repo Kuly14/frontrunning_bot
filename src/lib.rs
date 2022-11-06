@@ -1,5 +1,4 @@
 use anyhow::Result;
-use dotenv;
 use ethers::{
     prelude::k256::ecdsa::SigningKey,
     prelude::*,
@@ -30,7 +29,7 @@ pub async fn watch_mempool(config: config::Config) -> Result<()> {
                         }
                     };
 
-                    if success == true {
+                    if success {
                         execute_trade(&config, &tx_to, &tx.input, &tx.gas).await;
                     }
                 }
@@ -42,7 +41,7 @@ pub async fn watch_mempool(config: config::Config) -> Result<()> {
 
 pub async fn execute_trade(config: &config::Config, to: &H160, input: &Bytes, gas: &U256) {
     let bot = Bot::new(config.bot_address, config.http.clone());
-    let _receipt = match bot.frontrun_bytes(*to, input.clone(), *gas).send().await {
+    match bot.frontrun_bytes(*to, input.clone(), *gas).send().await {
         Ok(receipt) => match receipt.await {
             Ok(_) => println!("Trade on mainnet successful!!!"),
             Err(e) => eprintln!("Failed mainnnet trande with this error: {}", e),
@@ -62,7 +61,7 @@ pub async fn try_tx(config: &config::Config, to: &H160, input: &Bytes, gas: &U25
     let bot = deploy_contract_fork(&provider).await?;
 
     match bot
-        .frontrun_bytes(to.clone(), input.clone(), gas.clone())
+        .frontrun_bytes(*to, input.clone(), *gas)
         .send()
         .await
     {
