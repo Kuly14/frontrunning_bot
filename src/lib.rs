@@ -10,6 +10,7 @@ use std::time::Duration;
 
 pub mod config;
 pub mod setup;
+pub mod addresses;
 
 abigen!(Bot, "artifacts/abi/bot.json");
 
@@ -44,7 +45,7 @@ pub async fn execute_trade(config: &config::Config, to: &H160, input: &Bytes, ga
     match bot.frontrun_bytes(*to, input.clone(), *gas).send().await {
         Ok(receipt) => match receipt.await {
             Ok(_) => println!("Trade on mainnet successful!!!"),
-            Err(e) => eprintln!("Failed mainnnet trande with this error: {}", e),
+            Err(e) => eprintln!("Failed mainnnet trade with this error: {}", e),
         },
         Err(e) => eprintln!("Failed with this error: {}", e),
     };
