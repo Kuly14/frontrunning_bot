@@ -10,7 +10,6 @@ use std::time::Duration;
 
 pub mod config;
 pub mod setup;
-pub mod addresses;
 
 abigen!(Bot, "artifacts/abi/bot.json");
 
@@ -61,11 +60,7 @@ pub async fn try_tx(config: &config::Config, to: &H160, input: &Bytes, gas: &U25
 
     let bot = deploy_contract_fork(&provider).await?;
 
-    match bot
-        .frontrun_bytes(*to, input.clone(), *gas)
-        .send()
-        .await
-    {
+    match bot.frontrun_bytes(*to, input.clone(), *gas).send().await {
         Ok(_) => {
             println!("Transaction successful on mainnet-fork, moving onto real chain");
             return Ok(true);
